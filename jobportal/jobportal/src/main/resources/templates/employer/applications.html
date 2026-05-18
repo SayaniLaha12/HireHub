@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Applications — HireHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav class="navbar">
+    <div class="container nav-inner">
+        <a th:href="@{/}" class="logo"><span class="logo-icon">⬡</span> HireHub</a>
+        <ul class="nav-links">
+            <li><a th:href="@{/dashboard}">Dashboard</a></li>
+        </ul>
+        <div class="nav-auth">
+            <a th:href="@{/logout}" class="btn btn-ghost btn-sm">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container" style="padding:2.5rem 0 4rem;">
+    <div style="margin-bottom:2rem;">
+        <a th:href="@{/dashboard}" style="color:var(--text-muted);font-size:.85rem;">← Back to Dashboard</a>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:.8rem;flex-wrap:wrap;gap:1rem;">
+            <div>
+                <h2 th:text="'Applications for: ' + ${job.title}">Applications</h2>
+                <p style="color:var(--text-muted);margin-top:.3rem;">
+                    <span th:text="${job.company}">Company</span> ·
+                    <span th:text="${job.location}">Location</span> ·
+                    <span th:text="${applications.size() + ' applicants'}">0 applicants</span>
+                </p>
+            </div>
+            <a th:href="@{/jobs/{id}(id=${job.id})}" class="btn btn-outline btn-sm">View Job Listing</a>
+        </div>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success"><i class="fas fa-check-circle"></i> <span th:text="${success}"></span></div>
+
+    <!-- Applications -->
+    <div th:if="${!applications.isEmpty()}">
+        <div style="display:flex;flex-direction:column;gap:1.2rem;">
+            <div class="card" th:each="app : ${applications}">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+                    <!-- Applicant Info -->
+                    <div style="display:flex;gap:1rem;align-items:flex-start;">
+                        <div style="width:48px;height:48px;border-radius:50%;background:var(--accent);color:#000;font-weight:800;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;"
+                             th:text="${#strings.substring(app.applicant.firstName,0,1)}">A</div>
+                        <div>
+                            <h4 th:text="${app.applicant.fullName}" style="margin-bottom:.2rem;">Applicant Name</h4>
+                            <p style="font-size:.85rem;color:var(--text-muted);">
+                                <i class="fas fa-envelope" style="margin-right:.3rem;"></i>
+                                <span th:text="${app.applicant.email}">email</span>
+                            </p>
+                            <p style="font-size:.85rem;color:var(--text-muted);" th:if="${app.applicant.phone}">
+                                <i class="fas fa-phone" style="margin-right:.3rem;"></i>
+                                <span th:text="${app.applicant.phone}">phone</span>
+                            </p>
+                            <p style="font-size:.85rem;color:var(--text-muted);" th:if="${app.applicant.location}">
+                                <i class="fas fa-map-marker-alt" style="margin-right:.3rem;"></i>
+                                <span th:text="${app.applicant.location}">location</span>
+                            </p>
+                            <p style="font-size:.78rem;color:var(--text-muted);margin-top:.3rem;">
+                                Applied <span th:text="${#temporals.format(app.appliedAt,'dd MMM yyyy, HH:mm')}">date</span>
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Status Badge -->
+                    <span class="badge"
+                          th:classappend="${'badge-' + app.status.name().toLowerCase()}"
+                          th:text="${app.status.displayName}">Status</span>
+                </div>
+
+                <!-- Skills -->
+                <div th:if="${app.applicant.skills}" style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+                    <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.5rem;">Skills</p>
+                    <div class="skills-list">
+                        <span class="skill-chip" th:each="skill : ${#strings.arraySplit(app.applicant.skills,',')}" th:text="${#strings.trim(skill)}">Skill</span>
+                    </div>
+                </div>
+
+                <!-- Cover Letter -->
+                <div th:if="${app.coverLetter}" style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+                    <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.5rem;">Cover Letter</p>
+                    <p style="font-size:.9rem;color:var(--text-secondary);line-height:1.7;background:var(--bg-elevated);padding:1rem;border-radius:var(--radius);"
+                       th:text="${app.coverLetter}">Cover letter text</p>
+                </div>
+
+                <!-- Resume Link -->
+                <div th:if="${app.resumeLink}" style="margin-top:.8rem;">
+                    <a th:href="@{/resume/{f}(f=${app.resumeLink})}" target="_blank" class="btn btn-ghost btn-sm">
+                        <i class="fas fa-file-pdf"></i> View Resume
+                    </a>
+                </div>
+
+                <!-- Employer Note -->
+                <div th:if="${app.employerNote}" style="margin-top:.8rem;padding:.8rem 1rem;background:var(--accent-glow);border:1px solid var(--border-accent);border-radius:var(--radius);">
+                    <p style="font-size:.8rem;color:var(--accent);margin-bottom:.3rem;font-weight:600;">Your Note</p>
+                    <p style="font-size:.88rem;color:var(--text-secondary);" th:text="${app.employerNote}">Note</p>
+                </div>
+
+                <!-- Update Status Form -->
+                <div style="margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--border);">
+                    <form th:action="@{/employer/applications/{id}/status(id=${app.id})}" method="post">
+                        <div style="display:flex;gap:.8rem;align-items:flex-end;flex-wrap:wrap;">
+                            <div class="form-group" style="margin:0;flex:1;min-width:160px;">
+                                <label class="form-label">Update Status</label>
+                                <select name="status" class="form-control">
+                                    <option th:each="s : ${statuses}"
+                                            th:value="${s}"
+                                            th:text="${s.displayName}"
+                                            th:selected="${s == app.status}">Status</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin:0;flex:2;min-width:200px;">
+                                <label class="form-label">Note to applicant (optional)</label>
+                                <input type="text" name="note" class="form-control"
+                                       th:value="${app.employerNote}"
+                                       placeholder="e.g. We'll contact you for an interview..."/>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm" style="margin-bottom:0;white-space:nowrap;">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state" th:if="${applications.isEmpty()}">
+        <i class="fas fa-inbox"></i>
+        <h3>No applications yet</h3>
+        <p>Share your job listing to attract candidates.</p>
+    </div>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

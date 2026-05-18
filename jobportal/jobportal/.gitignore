@@ -1,0 +1,14 @@
+target/
+*.class
+*.jar
+*.war
+*.log
+.idea/
+*.iml
+*.iws
+.eclipse/
+.settings/
+.project
+.classpath
+.DS_Store
+application-local.properties

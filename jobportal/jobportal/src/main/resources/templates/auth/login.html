@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login — HireHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav class="navbar">
+    <div class="container nav-inner">
+        <a th:href="@{/}" class="logo"><span class="logo-icon">⬡</span> HireHub</a>
+    </div>
+</nav>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h2>Welcome back</h2>
+        <p class="subtitle">Sign in to your HireHub account</p>
+
+        <div th:if="${error}" class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span></div>
+        <div th:if="${message}" class="alert alert-success"><i class="fas fa-check-circle"></i> <span th:text="${message}"></span></div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="username" class="form-control" placeholder="you@example.com" required autofocus/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Enter your password" required/>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full mt-2">Sign In <i class="fas fa-arrow-right"></i></button>
+        </form>
+
+        <div style="text-align:center;margin-top:1.5rem;font-size:.9rem;color:var(--text-muted);">
+            Don't have an account? <a th:href="@{/register}" style="color:var(--accent);font-weight:500;">Create one free</a>
+        </div>
+
+        <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);">
+            <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.8rem;">🔑 Demo Accounts (password shown):</p>
+            <div style="display:grid;gap:.4rem;font-size:.78rem;color:var(--text-muted);">
+                <span>👷 Employer: <strong style="color:var(--accent);">employer@techcorp.com</strong> / employer123</span>
+                <span>🔍 Seeker: <strong style="color:var(--accent);">priya@gmail.com</strong> / seeker123</span>
+                <span>⚙️ Admin: <strong style="color:var(--accent);">admin@jobportal.com</strong> / admin123</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

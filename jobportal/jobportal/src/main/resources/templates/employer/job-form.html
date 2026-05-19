@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Post a Job — HireHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav class="navbar">
+    <div class="container nav-inner">
+        <a th:href="@{/}" class="logo"><span class="logo-icon">⬡</span> HireHub</a>
+        <ul class="nav-links">
+            <li><a th:href="@{/dashboard}">Dashboard</a></li>
+        </ul>
+        <div class="nav-auth">
+            <div class="user-menu">
+                <a th:href="@{/logout}" class="btn btn-ghost btn-sm">Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container" style="padding:2.5rem 0 4rem;">
+    <div style="max-width:760px;margin:0 auto;">
+        <div style="margin-bottom:2rem;">
+            <a th:href="@{/dashboard}" style="color:var(--text-muted);font-size:.85rem;">← Back to Dashboard</a>
+            <h2 style="margin-top:.8rem;">Post a New Job</h2>
+            <p style="color:var(--text-muted);">Fill in the details below to attract the right talent.</p>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success"><i class="fas fa-check-circle"></i> <span th:text="${success}"></span></div>
+
+        <form th:action="@{/employer/jobs/new}" method="post">
+            <!-- Basic Info -->
+            <div class="card mb-3">
+                <h3 style="margin-bottom:1.2rem;"><span class="text-accent">01.</span> Basic Information</h3>
+
+                <div class="form-group">
+                    <label class="form-label">Job Title *</label>
+                    <input type="text" name="title" class="form-control" placeholder="e.g. Senior Java Developer" required/>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Job Type *</label>
+                        <select name="jobType" class="form-control" required>
+                            <option value="">Select type...</option>
+                            <option th:each="type : ${jobTypes}"
+                                    th:value="${type}"
+                                    th:text="${type.displayName}">Type</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Experience Level *</label>
+                        <select name="experienceLevel" class="form-control" required>
+                            <option value="">Select level...</option>
+                            <option th:each="level : ${experienceLevels}"
+                                    th:value="${level}"
+                                    th:text="${level.displayName}">Level</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Location *</label>
+                        <input type="text" name="location" class="form-control" placeholder="e.g. Mumbai, India or Remote" required/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <input type="text" name="category" class="form-control" placeholder="e.g. IT, Finance, Marketing"/>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Salary Range</label>
+                        <input type="text" name="salaryRange" class="form-control" placeholder="e.g. ₹10 LPA – ₹18 LPA"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Number of Vacancies</label>
+                        <input type="number" name="vacancies" class="form-control" value="1" min="1" max="100"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Application Deadline</label>
+                    <input type="datetime-local" name="deadline" class="form-control"/>
+                </div>
+            </div>
+
+            <!-- Job Description -->
+            <div class="card mb-3">
+                <h3 style="margin-bottom:1.2rem;"><span class="text-accent">02.</span> Job Description</h3>
+                <div class="form-group">
+                    <label class="form-label">Full Job Description *</label>
+                    <textarea name="description" class="form-control" rows="10"
+                              placeholder="Describe the role, responsibilities, requirements, and what you're offering. Be specific to attract the right candidates." required
+                              style="min-height:200px;"></textarea>
+                </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="card mb-3">
+                <h3 style="margin-bottom:1.2rem;"><span class="text-accent">03.</span> Required Skills</h3>
+                <div class="form-group">
+                    <label class="form-label">Skills (comma-separated)</label>
+                    <input type="text" name="skills" class="form-control"
+                           placeholder="e.g. Java, Spring Boot, MySQL, REST APIs, Docker"/>
+                    <p style="font-size:.8rem;color:var(--text-muted);margin-top:.4rem;">Separate each skill with a comma.</p>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:1rem;justify-content:flex-end;">
+                <a th:href="@{/dashboard}" class="btn btn-ghost">Cancel</a>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-paper-plane"></i> Post Job
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

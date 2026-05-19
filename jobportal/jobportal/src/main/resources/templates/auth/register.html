@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Register — HireHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav class="navbar">
+    <div class="container nav-inner">
+        <a th:href="@{/}" class="logo"><span class="logo-icon">⬡</span> HireHub</a>
+    </div>
+</nav>
+
+<div class="auth-wrapper">
+    <div class="auth-card" style="max-width:540px;">
+        <h2>Create Account</h2>
+        <p class="subtitle">Join HireHub and start your journey</p>
+
+        <div th:if="${error}" class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span></div>
+
+        <form th:action="@{/register}" method="post" th:object="${registerDTO}">
+            <!-- Role Selection -->
+            <div class="form-group">
+                <label class="form-label">I am a...</label>
+                <div class="role-select">
+                    <div class="role-option">
+                        <input type="radio" id="roleSeeker" th:field="*{role}" value="JOB_SEEKER" checked/>
+                        <label for="roleSeeker"><span class="icon">🔍</span> Job Seeker</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="radio" id="roleEmployer" th:field="*{role}" value="EMPLOYER"/>
+                        <label for="roleEmployer"><span class="icon">🏢</span> Employer</label>
+                    </div>
+                </div>
+                <p class="form-error" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></p>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">First Name</label>
+                    <input type="text" th:field="*{firstName}" class="form-control" placeholder="First name" th:classappend="${#fields.hasErrors('firstName')} ? 'is-error' : ''"/>
+                    <p class="form-error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" th:field="*{lastName}" class="form-control" placeholder="Last name"/>
+                    <p class="form-error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" th:field="*{email}" class="form-control" placeholder="you@example.com"/>
+                <p class="form-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+            </div>
+
+            <!-- Company Name (employer only) -->
+            <div class="form-group" id="companyGroup" style="display:none;">
+                <label class="form-label">Company Name</label>
+                <input type="text" th:field="*{companyName}" class="form-control" placeholder="Your company name"/>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="text" th:field="*{phone}" class="form-control" placeholder="+91-98765..."/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input type="text" th:field="*{location}" class="form-control" placeholder="Mumbai, India"/>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" th:field="*{password}" class="form-control" placeholder="Min 6 characters"/>
+                    <p class="form-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" th:field="*{confirmPassword}" class="form-control" placeholder="Repeat password"/>
+                    <p class="form-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></p>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full mt-2">Create Account <i class="fas fa-arrow-right"></i></button>
+        </form>
+
+        <div style="text-align:center;margin-top:1.2rem;font-size:.9rem;color:var(--text-muted);">
+            Already have an account? <a th:href="@{/login}" style="color:var(--accent);font-weight:500;">Sign in</a>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+<script>
+    const employerRadio = document.getElementById('roleEmployer');
+    const seekerRadio = document.getElementById('roleSeeker');
+    const companyGroup = document.getElementById('companyGroup');
+
+    function toggleCompany() {
+        companyGroup.style.display = employerRadio.checked ? 'block' : 'none';
+    }
+    employerRadio.addEventListener('change', toggleCompany);
+    seekerRadio.addEventListener('change', toggleCompany);
+</script>
+</body>
+</html>

@@ -124,33 +124,21 @@ public class JobController {
 
     @PostMapping("/jobs/{id}/apply")
     public String applyForJob(@PathVariable Long id,
-                          @RequestParam(required = false) String coverLetter,
-                          @RequestParam(required = false) org.springframework.web.multipart.MultipartFile resumeFile,
-                          Authentication auth,
-                          RedirectAttributes ra) {
+                              @RequestParam(required = false) String coverLetter,
+                              @RequestParam(required = false) String resumeLink,
+                              Authentication auth,
+                              RedirectAttributes ra) {
         Job job = jobService.findById(id).orElse(null);
         if (job == null) return "redirect:/jobs";
-        User applicant = userService.findByEmail(auth.getName()).orElse(null);
-        if (applicant == null) return "redirect:/login";
+        User applicant = userService.findByEmail(auth.getName()).orElseThrow();
         try {
-            String resumeLink = null;
-            if (resumeFile != null && !resumeFile.isEmpty()) {
-            // Save file to uploads folder
-            String uploadsDir = System.getProperty("user.home") + "/jobportal-uploads/";
-            java.io.File dir = new java.io.File(uploadsDir);
-            if (!dir.exists()) dir.mkdirs();
-            String fileName = System.currentTimeMillis() + "_" + resumeFile.getOriginalFilename();
-            java.nio.file.Path filePath = java.nio.file.Paths.get(uploadsDir + fileName);
-            java.nio.file.Files.write(filePath, resumeFile.getBytes());
-            resumeLink = fileName;
-             }
-        applicationService.apply(job, applicant, coverLetter, resumeLink);
-        ra.addFlashAttribute("success", "Application submitted successfully!");
-         } catch (Exception e) {
-        ra.addFlashAttribute("error", e.getMessage());
-         }
-         return "redirect:/jobs/" + id;
-}
+            applicationService.apply(job, applicant, coverLetter, resumeLink);
+            ra.addFlashAttribute("success", "Application submitted successfully!");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/jobs/" + id;
+    }
 
     @GetMapping("/seeker/applications")
     public String myApplications(Authentication auth, Model model) {
@@ -161,20 +149,16 @@ public class JobController {
 
     @GetMapping("/profile")
     public String viewProfile(Authentication auth, Model model) {
-    if (auth == null) return "redirect:/login";
-    User user = userService.findByEmail(auth.getName()).orElse(null);
-    if (user == null) return "redirect:/login";
-    model.addAttribute("user", user);
-    return "profile";
+        User user = userService.findByEmail(auth.getName()).orElseThrow();
+        model.addAttribute("user", user);
+        return "profile";
     }
 
     @PostMapping("/profile")
     public String updateProfile(@ModelAttribute User updatedUser,
-                                 Authentication auth,
-                                 RedirectAttributes ra) {
-        if (auth == null) return "redirect:/login";
-        User user = userService.findByEmail(auth.getName()).orElse(null);
-        if (user == null) return "redirect:/login";
+                                Authentication auth,
+                                RedirectAttributes ra) {
+        User user = userService.findByEmail(auth.getName()).orElseThrow();
         user.setFirstName(updatedUser.getFirstName());
         user.setLastName(updatedUser.getLastName());
         user.setPhone(updatedUser.getPhone());
@@ -188,19 +172,4 @@ public class JobController {
         ra.addFlashAttribute("success", "Profile updated successfully!");
         return "redirect:/profile";
     }
-    @GetMapping("/resume/{filename}")
-    public void downloadResume(@PathVariable String filename,
-                           jakarta.servlet.http.HttpServletResponse response) throws Exception {
-        String uploadsDir = System.getProperty("user.home") + "/jobportal-uploads/";
-        java.io.File file = new java.io.File(uploadsDir + filename);
-        if (!file.exists()) {
-             response.sendError(404, "Resume not found");
-             return;
-    }
-    response.setContentType("application/pdf");
-    response.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
-    java.nio.file.Files.copy(file.toPath(), response.getOutputStream());
-    response.getOutputStream().flush();
-}
-    
 }

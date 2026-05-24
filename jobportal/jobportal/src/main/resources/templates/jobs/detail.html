@@ -95,11 +95,11 @@
 
                 <!-- Apply Form -->
                 <div sec:authorize="hasRole('JOB_SEEKER')" th:if="${!hasApplied}">
-                    <form th:action="@{/jobs/{id}/apply(id=${job.id})}" method="post" enctype="multipart/form-data">
-                            <label class="form-label">Upload Resume PDF <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
-                            <input type="file" name="resumeFile" accept=".pdf" class="form-control" style="padding:.5rem;cursor:pointer;"/>
-                            <p style="font-size:.78rem;color:var(--text-muted);margin-top:.3rem;">Max size: 5MB — PDF only</p>
-                </div>
+                    <form th:action="@{/jobs/{id}/apply(id=${job.id})}" method="post">
+                        <div class="form-group">
+                            <label class="form-label">Cover Letter <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+                            <textarea name="coverLetter" class="form-control" placeholder="Tell the employer why you're a great fit..."></textarea>
+                        </div>
                         <div class="form-group">
                             <label class="form-label">Resume Link <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
                             <input type="url" name="resumeLink" class="form-control" placeholder="https://drive.google.com/..."/>

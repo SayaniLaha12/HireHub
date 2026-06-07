@@ -90,9 +90,10 @@
 
                 <!-- Resume Link -->
                 <div th:if="${app.resumeLink}" style="margin-top:.8rem;">
-                    <a th:href="${app.resumeLink}" target="_blank" class="btn btn-ghost btn-sm">
-                        <i class="fas fa-external-link-alt"></i> View Resume
-                    </a>
+                    <a th:href="@{/resume/{filename}(filename=${app.resumeLink})}" 
+                        target="_blank" class="btn btn-ghost btn-sm">
+                         <i class="fas fa-download"></i> Download Resume
+                     </a>
                 </div>
 
                 <!-- Employer Note -->

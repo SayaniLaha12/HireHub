@@ -95,7 +95,7 @@
 
                 <!-- Apply Form -->
                 <div sec:authorize="hasRole('JOB_SEEKER')" th:if="${!hasApplied}">
-                    <form th:action="@{/jobs/{id}/apply(id=${job.id})}" method="post">
+                    <form th:action="@{/jobs/{id}/apply(id=${job.id})}" method="post" enctype="multipart/form-data">
                         <div class="form-group">
                             <label class="form-label">Cover Letter <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
                             <textarea name="coverLetter" class="form-control" placeholder="Tell the employer why you're a great fit..."></textarea>

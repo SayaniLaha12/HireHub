@@ -1,5 +1,6 @@
 package com.jobportal.controller;
 
+import org.springframework.web.multipart.MultipartFile;
 import com.jobportal.model.Application;
 import com.jobportal.model.Job;
 import com.jobportal.model.User;
@@ -125,19 +126,27 @@ public class JobController {
     @PostMapping("/jobs/{id}/apply")
     public String applyForJob(@PathVariable Long id,
                               @RequestParam(required = false) String coverLetter,
-                              @RequestParam(required = false) String resumeLink,
+                              @RequestParam(required = false) MultipartFile resumeFile,
                               Authentication auth,
                               RedirectAttributes ra) {
-        Job job = jobService.findById(id).orElse(null);
-        if (job == null) return "redirect:/jobs";
-        User applicant = userService.findByEmail(auth.getName()).orElseThrow();
-        try {
-            applicationService.apply(job, applicant, coverLetter, resumeLink);
-            ra.addFlashAttribute("success", "Application submitted successfully!");
-        } catch (Exception e) {
-            ra.addFlashAttribute("error", e.getMessage());
+    Job job = jobService.findById(id).orElse(null);
+    if (job == null) return "redirect:/jobs";
+    User applicant = userService.findByEmail(auth.getName()).orElseThrow();
+    try {
+        String resumeFileName = null;
+        if (resumeFile != null && !resumeFile.isEmpty()) {
+            String uploadDir = System.getProperty("user.home") + "/uploads/";
+            java.io.File dir = new java.io.File(uploadDir);
+            if (!dir.exists()) dir.mkdirs();
+            resumeFileName = System.currentTimeMillis() + "_" + resumeFile.getOriginalFilename();
+            resumeFile.transferTo(new java.io.File(uploadDir + resumeFileName));
         }
-        return "redirect:/jobs/" + id;
+        applicationService.apply(job, applicant, coverLetter, resumeFileName);
+        ra.addFlashAttribute("success", "Application submitted successfully!");
+    } catch (Exception e) {
+        ra.addFlashAttribute("error", e.getMessage());
+    }
+    return "redirect:/jobs/" + id;   
     }
 
     @GetMapping("/seeker/applications")
@@ -171,5 +180,16 @@ public class JobController {
         userService.updateProfile(user);
         ra.addFlashAttribute("success", "Profile updated successfully!");
         return "redirect:/profile";
+    }
+    @GetMapping("/resume/{filename}")
+    public void downloadResume(@PathVariable String filename,
+                           jakarta.servlet.http.HttpServletResponse response) throws Exception {
+        String uploadDir = System.getProperty("user.home") + "/uploads/";
+        java.io.File file = new java.io.File(uploadDir + filename);
+        if (file.exists()) {
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+            java.nio.file.Files.copy(file.toPath(), response.getOutputStream());
+         }
     }
 }

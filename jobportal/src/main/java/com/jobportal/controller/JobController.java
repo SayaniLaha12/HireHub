@@ -81,7 +81,14 @@ public class JobController {
                           RedirectAttributes redirectAttributes) {
         User employer = userService.findByEmail(auth.getName()).orElseThrow();
         job.setEmployer(employer);
-        job.setCompany(employer.getCompanyName() != null ? employer.getCompanyName() : employer.getFullName());
+            String companyName = employer.getCompanyName();
+            if (companyName == null || companyName.isBlank()) {
+                companyName = employer.getFullName();
+            }
+            if (companyName == null || companyName.isBlank()) {
+                companyName = employer.getEmail();
+            }
+job.setCompany(companyName);
         jobService.postJob(job);
         redirectAttributes.addFlashAttribute("success", "Job posted successfully!");
         return "redirect:/dashboard";
